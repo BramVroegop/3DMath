@@ -281,7 +281,7 @@ struct Matrix2f {
 
         for (unsigned int i = 0; i < 2; i++) {
             for (unsigned int j = 0; j < 2; j++) {
-                r.arr[i][j] = this->arr[i][j] += m.arr[i][j];
+                r.arr[i][j] = this->arr[i][j] + m.arr[i][j];
             }
         }
 
@@ -297,7 +297,7 @@ struct Matrix2f {
 
         for (unsigned int i = 0; i < 2; i++) {
             for (unsigned int j = 0; j < 2; j++) {
-                r.arr[i][j] = this->arr[i][j] -= m.arr[i][j];
+                r.arr[i][j] = this->arr[i][j] - m.arr[i][j];
             }
         }
 
@@ -342,6 +342,124 @@ NOTE: Matrices are row-major
 */
 struct Matrix3f {
     float arr[3][3];
+
+    Matrix3f(float diagonal = 1.0f) {
+        for (unsigned int i = 0; i < 3; i++) {
+            for (unsigned int j = 0; j < 3; j++) {
+                if (i == j) {
+                    arr[i][j] = diagonal;
+                } else {
+                    arr[i][j] = 0.0f;
+                }
+            }
+        }
+    } 
+
+    float det() {
+        return arr[0][0] * (arr[1][1] * arr[2][2] - arr[1][2] * arr[2][1])
+         - arr[0][1] * (arr[1][0] * arr[2][2] - arr[1][2] * arr[2][0])
+         + arr[0][2] * (arr[1][0] * arr[2][1] - arr[1][1] * arr[2][0]);
+    }
+
+    Matrix3f inversed() {
+        Matrix3f m;
+        float det = this->det();
+        if (det == 0.0f) {
+            return m;
+        }
+
+        float inv_det = 1.0f / det;
+
+        m.arr[0][0] =  (arr[1][1] * arr[2][2] - arr[1][2] * arr[2][1]) * inv_det;
+        m.arr[0][1] = -(arr[0][1] * arr[2][2] - arr[0][2] * arr[2][1]) * inv_det;
+        m.arr[0][2] =  (arr[0][1] * arr[1][2] - arr[0][2] * arr[1][1]) * inv_det;
+
+        m.arr[1][0] = -(arr[1][0] * arr[2][2] - arr[1][2] * arr[2][0]) * inv_det;
+        m.arr[1][1] =  (arr[0][0] * arr[2][2] - arr[0][2] * arr[2][0]) * inv_det;
+        m.arr[1][2] = -(arr[0][0] * arr[1][2] - arr[0][2] * arr[1][0]) * inv_det;
+
+        m.arr[2][0] =  (arr[1][0] * arr[2][1] - arr[1][1] * arr[2][0]) * inv_det;
+        m.arr[2][1] = -(arr[0][0] * arr[2][1] - arr[0][1] * arr[2][0]) * inv_det;
+        m.arr[2][2] =  (arr[0][0] * arr[1][1] - arr[0][1] * arr[1][0]) * inv_det;
+
+        return m;
+    }
+
+    Matrix3f transposed() {
+        Matrix3f m;
+        for (unsigned int i = 0; i < 3; i++) {
+            for (unsigned int j = 0; j < 3; j++) {
+                if (i != j) {
+                    m.arr[i][j] = this->arr[j][i];
+                } else {
+                    m.arr[i][j] = this->arr[i][j];
+                }
+            }
+        }
+
+        return m;
+    }
+
+    Matrix3f operator+(const Matrix3f &m) {
+        Matrix3f r;
+
+        for (unsigned int i = 0; i < 3; i++) {
+            for (unsigned int j = 0; j < 3; j++) {
+                r.arr[i][j] = this->arr[i][j] + m.arr[i][j];
+            }
+        }
+
+        return r;
+    }
+
+    void operator+=(const Matrix3f &m) {
+        *this = (*this) + m;
+    }
+
+     Matrix3f operator-(const Matrix3f &m) {
+        Matrix3f r;
+
+        for (unsigned int i = 0; i < 3; i++) {
+            for (unsigned int j = 0; j < 3; j++) {
+                r.arr[i][j] = this->arr[i][j] - m.arr[i][j];
+            }
+        }
+
+        return r;
+    }
+
+    void operator-=(const Matrix3f &m) {
+        *this = (*this) - m;
+    }
+
+    Matrix3f operator*(const Matrix3f &m) {
+        Matrix3f r;
+
+        for (unsigned int i = 0; i < 3; i++) {
+            for (unsigned int j = 0; j < 3; j++) {
+                float sum = 0.0f;
+                for (unsigned int k = 0; k < 3; k++) {
+                    sum += this->arr[i][k] * m.arr[k][j]; 
+                }
+                r.arr[i][j] = sum;
+            }
+        }
+
+        return r;
+    }
+
+    void operator*=(const Matrix3f &m) {
+        *this = (*this) * m;
+    }
+
+    Vector3f operator*(const Vector3f &v) {
+        Vector3f r;
+
+        r.x = this->arr[0][0] * v.x + this->arr[0][1] * v.y + this->arr[0][2] * v.z;
+        r.y = this->arr[1][0] * v.x + this->arr[1][1] * v.y + this->arr[1][2] * v.z; 
+        r.z = this->arr[2][0] * v.x + this->arr[2][1] * v.y + this->arr[2][2] * v.z;
+        return r;
+    }
 };
 
 /*
@@ -349,4 +467,233 @@ NOTE: Matrices are row-major
 */
 struct Matrix4f {
     float arr[4][4];
+
+    Matrix4f(float diagonal = 1.0f) {
+        for (unsigned int i = 0; i < 4; i++) {
+            for (unsigned int j = 0; j < 4; j++) {
+                if (i == j) {
+                    arr[i][j] = diagonal;
+                } else {
+                    arr[i][j] = 0.0f;
+                }
+            }
+        }
+    }
+
+    /*
+    * Ripped from: https://stackoverflow.com/questions/2937702/i-want-to-find-determinant-of-4x4-matrix-in-c-sharp
+    */
+    float det() { 
+        return
+        arr[0][3] * arr[1][2] * arr[2][1] * arr[3][0] - arr[0][2] * arr[1][3] * arr[2][1] * arr[3][0] -
+        arr[0][3] * arr[1][1] * arr[2][2] * arr[3][0] + arr[0][1] * arr[1][3] * arr[2][2] * arr[3][0] +
+        arr[0][2] * arr[1][1] * arr[2][3] * arr[3][0] - arr[0][1] * arr[1][2] * arr[2][3] * arr[3][0] -
+        arr[0][3] * arr[1][2] * arr[2][0] * arr[3][1] + arr[0][2] * arr[1][3] * arr[2][0] * arr[3][1] +
+        arr[0][3] * arr[1][0] * arr[2][2] * arr[3][1] - arr[0][0] * arr[1][3] * arr[2][2] * arr[3][1] -
+        arr[0][2] * arr[1][0] * arr[2][3] * arr[3][1] + arr[0][0] * arr[1][2] * arr[2][3] * arr[3][1] +
+        arr[0][3] * arr[1][1] * arr[2][0] * arr[3][2] - arr[0][1] * arr[1][3] * arr[2][0] * arr[3][2] -
+        arr[0][3] * arr[1][0] * arr[2][1] * arr[3][2] + arr[0][0] * arr[1][3] * arr[2][1] * arr[3][2] +
+        arr[0][1] * arr[1][0] * arr[2][3] * arr[3][2] - arr[0][0] * arr[1][1] * arr[2][3] * arr[3][2] -
+        arr[0][2] * arr[1][1] * arr[2][0] * arr[3][3] + arr[0][1] * arr[1][2] * arr[2][0] * arr[3][3] +
+        arr[0][2] * arr[1][0] * arr[2][1] * arr[3][3] - arr[0][0] * arr[1][2] * arr[2][1] * arr[3][3] -
+        arr[0][1] * arr[1][0] * arr[2][2] * arr[3][3] + arr[0][0] * arr[1][1] * arr[2][2] * arr[3][3];
+    }
+
+    /*
+    * Ripped from: https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
+    */
+    Matrix4f inversed() {
+        float inv[4][4];
+
+        inv[0][0] = arr[1][1] * arr[2][2] * arr[3][3] -
+                    arr[1][1] * arr[2][3] * arr[3][2] -
+                    arr[2][1] * arr[1][2] * arr[3][3] +
+                    arr[2][1] * arr[1][3] * arr[3][2] +
+                    arr[3][1] * arr[1][2] * arr[2][3] -
+                    arr[3][1] * arr[1][3] * arr[2][2];
+
+        inv[1][0] = -arr[1][0] * arr[2][2] * arr[3][3] +
+                    arr[1][0] * arr[2][3] * arr[3][2] +
+                    arr[2][0] * arr[1][2] * arr[3][3] -
+                    arr[2][0] * arr[1][3] * arr[3][2] -
+                    arr[3][0] * arr[1][2] * arr[2][3] +
+                    arr[3][0] * arr[1][3] * arr[2][2];
+
+        inv[2][0] = arr[1][0] * arr[2][1] * arr[3][3] -
+                    arr[1][0] * arr[2][3] * arr[3][1] -
+                    arr[2][0] * arr[1][1] * arr[3][3] +
+                    arr[2][0] * arr[1][3] * arr[3][1] +
+                    arr[3][0] * arr[1][1] * arr[2][3] -
+                    arr[3][0] * arr[1][3] * arr[2][1];
+
+        inv[3][0] = -arr[1][0] * arr[2][1] * arr[3][2] +
+                    arr[1][0] * arr[2][2] * arr[3][1] +
+                    arr[2][0] * arr[1][1] * arr[3][2] -
+                    arr[2][0] * arr[1][2] * arr[3][1] -
+                    arr[3][0] * arr[1][1] * arr[2][2] +
+                    arr[3][0] * arr[1][2] * arr[2][1];
+
+        inv[0][1] = -arr[0][1] * arr[2][2] * arr[3][3] +
+                    arr[0][1] * arr[2][3] * arr[3][2] +
+                    arr[2][1] * arr[0][2] * arr[3][3] -
+                    arr[2][1] * arr[0][3] * arr[3][2] -
+                    arr[3][1] * arr[0][2] * arr[2][3] +
+                    arr[3][1] * arr[0][3] * arr[2][2];
+
+        inv[1][1] = arr[0][0] * arr[2][2] * arr[3][3] -
+                    arr[0][0] * arr[2][3] * arr[3][2] -
+                    arr[2][0] * arr[0][2] * arr[3][3] +
+                    arr[2][0] * arr[0][3] * arr[3][2] +
+                    arr[3][0] * arr[0][2] * arr[2][3] -
+                    arr[3][0] * arr[0][3] * arr[2][2];
+
+        inv[2][1] = -arr[0][0] * arr[2][1] * arr[3][3] +
+                    arr[0][0] * arr[2][3] * arr[3][1] +
+                    arr[2][0] * arr[0][1] * arr[3][3] -
+                    arr[2][0] * arr[0][3] * arr[3][1] -
+                    arr[3][0] * arr[0][1] * arr[2][3] +
+                    arr[3][0] * arr[0][3] * arr[2][1];
+
+        inv[3][1] = arr[0][0] * arr[2][1] * arr[3][2] -
+                    arr[0][0] * arr[2][2] * arr[3][1] -
+                    arr[2][0] * arr[0][1] * arr[3][2] +
+                    arr[2][0] * arr[0][2] * arr[3][1] +
+                    arr[3][0] * arr[0][1] * arr[2][2] -
+                    arr[3][0] * arr[0][2] * arr[2][1];
+
+        inv[0][2] = arr[0][1] * arr[1][2] * arr[3][3] -
+                    arr[0][1] * arr[1][3] * arr[3][2] -
+                    arr[1][1] * arr[0][2] * arr[3][3] +
+                    arr[1][1] * arr[0][3] * arr[3][2] +
+                    arr[3][1] * arr[0][2] * arr[1][3] -
+                    arr[3][1] * arr[0][3] * arr[1][2];
+
+        inv[1][2] = -arr[0][0] * arr[1][2] * arr[3][3] +
+                    arr[0][0] * arr[1][3] * arr[3][2] +
+                    arr[1][0] * arr[0][2] * arr[3][3] -
+                    arr[1][0] * arr[0][3] * arr[3][2] -
+                    arr[3][0] * arr[0][2] * arr[1][3] +
+                    arr[3][0] * arr[0][3] * arr[1][2];
+
+        inv[2][2] = arr[0][0] * arr[1][1] * arr[3][3] -
+                    arr[0][0] * arr[1][3] * arr[3][1] -
+                    arr[1][0] * arr[0][1] * arr[3][3] +
+                    arr[1][0] * arr[0][3] * arr[3][1] +
+                    arr[3][0] * arr[0][1] * arr[1][3] -
+                    arr[3][0] * arr[0][3] * arr[1][1];
+
+        inv[3][2] = -arr[0][0] * arr[1][1] * arr[3][2] +
+                    arr[0][0] * arr[1][2] * arr[3][1] +
+                    arr[1][0] * arr[0][1] * arr[3][2] -
+                    arr[1][0] * arr[0][2] * arr[3][1] -
+                    arr[3][0] * arr[0][1] * arr[1][2] +
+                    arr[3][0] * arr[0][2] * arr[1][1];
+
+        inv[0][3] = -arr[0][1] * arr[1][2] * arr[2][3] +
+                    arr[0][1] * arr[1][3] * arr[2][2] +
+                    arr[1][1] * arr[0][2] * arr[2][3] -
+                    arr[1][1] * arr[0][3] * arr[2][2] -
+                    arr[2][1] * arr[0][2] * arr[1][3] +
+                    arr[2][1] * arr[0][3] * arr[1][2];
+
+        inv[1][3] = arr[0][0] * arr[1][2] * arr[2][3] -
+                    arr[0][0] * arr[1][3] * arr[2][2] -
+                    arr[1][0] * arr[0][2] * arr[2][3] +
+                    arr[1][0] * arr[0][3] * arr[2][2] +
+                    arr[2][0] * arr[0][2] * arr[1][3] -
+                    arr[2][0] * arr[0][3] * arr[1][2];
+
+        inv[2][3] = -arr[0][0] * arr[1][1] * arr[2][3] +
+                    arr[0][0] * arr[1][3] * arr[2][1] +
+                    arr[1][0] * arr[0][1] * arr[2][3] -
+                    arr[1][0] * arr[0][3] * arr[2][1] -
+                    arr[2][0] * arr[0][1] * arr[1][3] +
+                    arr[2][0] * arr[0][3] * arr[1][1];
+
+        inv[3][3] = arr[0][0] * arr[1][1] * arr[2][2] -
+                    arr[0][0] * arr[1][2] * arr[2][1] -
+                    arr[1][0] * arr[0][1] * arr[2][2] +
+                    arr[1][0] * arr[0][2] * arr[2][1] +
+                    arr[2][0] * arr[0][1] * arr[1][2] -
+                    arr[2][0] * arr[0][2] * arr[1][1];
+
+        float det = arr[0][0] * inv[0][0] + arr[0][1] * inv[1][0] + arr[0][2] * inv[2][0] + arr[0][3] * inv[3][0];
+
+        if (det == 0.0f) {
+            return Matrix4f(1.0f);
+        }
+
+        float inv_det = 1.0f / det;
+
+        Matrix4f result(0.0f);
+        for (unsigned int i = 0; i < 4; i++) {
+            for (unsigned int j = 0; j < 4; j++) {
+                result.arr[i][j] = inv[i][j] * inv_det;
+            }
+        }
+
+        return result;
+    }
+
+    Matrix4f transposed() {
+        Matrix4f m;
+        for (unsigned int i = 0; i < 4; i++) {
+            for (unsigned int j = 0; j < 4; j++) {
+                m.arr[i][j] = this->arr[j][i];
+            }
+        }
+        return m;
+    }
+
+    Matrix4f operator+(const Matrix4f &m) {
+        Matrix4f r;
+        for (unsigned int i = 0; i < 4; i++) {
+            for (unsigned int j = 0; j < 4; j++) {
+                r.arr[i][j] = this->arr[i][j] + m.arr[i][j];
+            }
+        }
+        return r;
+    }
+
+    void operator+=(const Matrix4f &m) {
+        *this = (*this) + m;
+    }
+
+    Matrix4f operator-(const Matrix4f &m) {
+        Matrix4f r;
+        for (unsigned int i = 0; i < 4; i++) {
+            for (unsigned int j = 0; j < 4; j++) {
+                r.arr[i][j] = this->arr[i][j] - m.arr[i][j];
+            }
+        }
+        return r;
+    }
+
+    void operator-=(const Matrix4f &m) {
+        *this = (*this) - m;
+    }
+
+    Matrix4f operator*(const Matrix4f &m) {
+        Matrix4f r(0.0f);
+        for (unsigned int i = 0; i < 4; i++) {
+            for (unsigned int j = 0; j < 4; j++) {
+                for (unsigned int k = 0; k < 4; k++) {
+                    r.arr[i][j] += this->arr[i][k] * m.arr[k][j]; 
+                } 
+            }        
+        }
+        return r;
+    }
+
+    void operator*=(const Matrix4f &m) {
+        *this = (*this) * m;
+    }
+
+    Vector3f operator*(const Vector3f &v) {
+        return Vector3f {
+            arr[0][0] * v.x + arr[0][1] * v.y + arr[0][2] * v.z + arr[0][3],
+            arr[1][0] * v.x + arr[1][1] * v.y + arr[1][2] * v.z + arr[1][3],
+            arr[2][0] * v.x + arr[2][1] * v.y + arr[2][2] * v.z + arr[2][3],
+        };
+    }
 };
