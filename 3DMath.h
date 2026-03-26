@@ -677,10 +677,12 @@ struct Matrix4f {
         Matrix4f r(0.0f);
         for (unsigned int i = 0; i < 4; i++) {
             for (unsigned int j = 0; j < 4; j++) {
+                float sum = 0.0f;
                 for (unsigned int k = 0; k < 4; k++) {
-                    r.arr[i][j] += this->arr[i][k] * m.arr[k][j]; 
-                } 
-            }        
+                    sum += this->arr[i][k] * m.arr[k][j]; 
+                }
+                r.arr[i][j] = sum;
+            }
         }
         return r;
     }
