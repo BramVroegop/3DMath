@@ -1,6 +1,8 @@
 #pragma once
 #include <math.h>
 
+#define M_EPSILON 0.9995f
+
 struct Vector2f {
     float x, y;
 
@@ -745,14 +747,14 @@ struct Quaternion {
         */
         if (inner < 0.0f) {
             inner *= -1.0f;
-            q2 = Quaternion { -q2.x, -q2.y, -q2.z, -q2.w };
+            q2 *= -1.0f;
         }
 
         float angle = acosf(inner);
         float s = sinf(angle);
 
         // If quaternions are nearly identical fall back to nlerp
-        if (inner > 0.9995f) {
+        if (inner > M_EPSILON) {
             Quaternion r = q1 * (1.0f - t) + q2 * t;
             return r.normalized();
         }
@@ -775,12 +777,16 @@ struct Quaternion {
         return Quaternion { this->x * inv_l , this->y * inv_l, this->z * inv_l, this->w * inv_l };
     }
 
-    Quaternion operator+(const Quaternion &q) const {
+    Quaternion operator+(const Quaternion &q) {
         return Quaternion { this->x + q.x, this->y + q.y, this->z + q.z, this->w + q.w };
     }
 
-    Quaternion operator*(float s) const {
+    Quaternion operator*(float s) {
         return Quaternion { this->x * s, this->y * s, this->z * s, this->w * s };
+    }
+
+    void operator*=(float s) {
+        *this = (*this) * s;
     }
 
     Quaternion operator*(const Quaternion &q) {
