@@ -4,6 +4,11 @@
 struct Vector2f {
     float x, y;
 
+    Vector2f(float x = 0.0f, float y = 0.0f) {
+        this->x = x;
+        this->y = y;
+    }
+
     static float dot(Vector2f v1, Vector2f v2) {
         return v1.x * v2.x + v1.y * v2.y;
     }
@@ -38,7 +43,7 @@ struct Vector2f {
     }
 
     Vector2f operator+(const Vector2f &v2) {
-        return Vector2f { this->x + v2.x, this->y + v2.y };
+        return Vector2f(this->x + v2.x, this->y + v2.y);
     }
 
     void operator+=(const Vector2f &v2) {
@@ -46,7 +51,7 @@ struct Vector2f {
     }
 
     Vector2f operator-(const Vector2f &v2) {
-        return Vector2f { this->x - v2.x, this->y - v2.y };
+        return Vector2f(this->x - v2.x, this->y - v2.y);
     }
 
     void operator-=(const Vector2f &v2) {
@@ -54,7 +59,7 @@ struct Vector2f {
     }
 
     Vector2f operator*(const float scalar) {
-        return Vector2f { this->x * scalar, this->y * scalar };
+        return Vector2f(this->x * scalar, this->y * scalar);
     }
 
     void operator*=(const float scalar) {
@@ -62,7 +67,7 @@ struct Vector2f {
     }
 
     Vector2f operator/(const float scalar) {
-        return Vector2f { this->x / scalar, this->y / scalar };
+        return Vector2f(this->x / scalar, this->y / scalar);
     }
 
     void operator/=(const float scalar) {
@@ -73,16 +78,22 @@ struct Vector2f {
 struct Vector3f {
     float x, y, z;
 
+    Vector3f(float x = 0.0f, float y = 0.0f, float z = 0.0f) {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
+
     static float dot(Vector3f v1, Vector3f v2) {
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
 
     static Vector3f cross(Vector3f v1, Vector3f v2) {
-        return Vector3f {
+        return Vector3f(
             v1.y * v2.z - v1.z * v2.y,
             v1.z * v2.x - v1.x * v2.z,
             v1.x * v2.y - v1.y * v2.x
-        };
+        );
     }
 
     static Vector3f projected(Vector3f v, Vector3f to_project_on) {
@@ -106,7 +117,7 @@ struct Vector3f {
     }
 
     Vector3f operator+(const Vector3f &v2) {
-        return Vector3f { this->x + v2.x, this->y + v2.y, this->z + v2.z };
+        return Vector3f(this->x + v2.x, this->y + v2.y, this->z + v2.z);
     }
 
     void operator+=(const Vector3f &v2) {
@@ -114,7 +125,7 @@ struct Vector3f {
     }
 
     Vector3f operator-(const Vector3f &v2) {
-        return Vector3f { this->x - v2.x, this->y - v2.y, this->z - v2.z };
+        return Vector3f(this->x - v2.x, this->y - v2.y, this->z - v2.z);
     }
 
     void operator-=(const Vector3f &v2) {
@@ -122,7 +133,7 @@ struct Vector3f {
     }
 
     Vector3f operator*(const float scalar) {
-        return Vector3f { this->x * scalar, this->y * scalar, this->z * scalar };
+        return Vector3f(this->x * scalar, this->y * scalar, this->z * scalar);
     }
 
     void operator*=(const float scalar) {
@@ -130,7 +141,7 @@ struct Vector3f {
     }
 
     Vector3f operator/(const float scalar) {
-        return Vector3f { this->x / scalar, this->y / scalar, this->z / scalar };
+        return Vector3f(this->x / scalar, this->y / scalar, this->z / scalar);
     }
 
     void operator/=(const float scalar) {
@@ -167,16 +178,22 @@ struct Vector4f {
     }
 
     Vector2f as_Vector2f() {
-        return Vector2f { this->x, this->y };
+        return Vector2f(this->x, this->y);
     }
 
     Vector3f as_Vector3f() {
-        return Vector3f { this->x, this->y, this->z };
+        return Vector3f(this->x, this->y, this->z);
     }
 };
 
 struct Triangle2D {
     Vector2f p1, p2, p3;
+
+    Triangle2D(Vector2f p1, Vector2f p2, Vector2f p3) {
+        this->p1 = p1;
+        this->p2 = p2;
+        this->p3 = p3;
+    }
 
     /*
     Math for this was pulled straight from the "Barycentric coordinates on triangles" heading
@@ -203,6 +220,12 @@ struct Triangle2D {
 
 struct Triangle3D {
     Vector3f p1, p2, p3;
+
+    Triangle3D(Vector3f p1, Vector3f p2, Vector3f p3) {
+        this->p1 = p1;
+        this->p2 = p2;
+        this->p3 = p3;
+    }
 
     /*
     Math for this was pulled straight from the "Barycentric coordinates on triangles" heading
@@ -715,6 +738,13 @@ struct Matrix4f {
 struct Quaternion {
     float x, y, z, w;
 
+    Quaternion(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 1.0f) {
+        this->x = x;
+        this->y = y; 
+        this->z = z;
+        this->w = w;
+    }
+
     static float dot(Quaternion q1, Quaternion q2) {
         return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
     }
@@ -738,9 +768,9 @@ struct Quaternion {
     Also assumes a normalized Quaternion
     */
     static Quaternion from_euler(float x, float y, float z) {
-        Quaternion qx = Quaternion::from_axis_angle(Vector3f { 1.0f, 0.0f, 0.0f}, x);
-        Quaternion qy = Quaternion::from_axis_angle(Vector3f { 0.0f, 1.0f, 0.0f}, y);
-        Quaternion qz = Quaternion::from_axis_angle(Vector3f { 0.0f, 0.0f, 1.0f}, z);
+        Quaternion qx = Quaternion::from_axis_angle(Vector3f(1.0f, 0.0f, 0.0f), x);
+        Quaternion qy = Quaternion::from_axis_angle(Vector3f(0.0f, 1.0f, 0.0f), y);
+        Quaternion qz = Quaternion::from_axis_angle(Vector3f(0.0f, 0.0f, 1.0f), z);
 
         return qy * qx * qz;
     };
@@ -784,15 +814,15 @@ struct Quaternion {
         }
 
         float inv_l = 1.0f / l;
-        return Quaternion { this->x * inv_l , this->y * inv_l, this->z * inv_l, this->w * inv_l };
+        return Quaternion(this->x * inv_l , this->y * inv_l, this->z * inv_l, this->w * inv_l);
     }
 
     Quaternion operator+(const Quaternion &q) {
-        return Quaternion { this->x + q.x, this->y + q.y, this->z + q.z, this->w + q.w };
+        return Quaternion(this->x + q.x, this->y + q.y, this->z + q.z, this->w + q.w);
     }
 
     Quaternion operator*(float s) {
-        return Quaternion { this->x * s, this->y * s, this->z * s, this->w * s };
+        return Quaternion(this->x * s, this->y * s, this->z * s, this->w * s);
     }
 
     void operator*=(float s) {
@@ -800,12 +830,12 @@ struct Quaternion {
     }
 
     Quaternion operator*(const Quaternion &q) {
-        return Quaternion {
+        return Quaternion(
             this->w * q.x + this->x * q.w + this->y * q.z - this->z * q.y,
             this->w * q.y - this->x * q.z + this->y * q.w + this->z * q.x,
             this->w * q.z + this->x * q.y - this->y * q.x + this->z * q.w,
             this->w * q.w - this->x * q.x - this->y * q.y - this->z * q.z
-        };
+        );
     }
 
     void operator*=(const Quaternion &q) {
@@ -816,11 +846,11 @@ struct Quaternion {
     Assumes a normalized quaternion
     */
     Vector3f operator*(const Vector3f &v) {
-        Quaternion qv = { v.x, v.y, v.z, 0.0f };
-        Quaternion conj { -this->x, -this->y, -this->z, this->w };
+        Quaternion qv(v.x, v.y, v.z, 0.0f);
+        Quaternion conj(-this->x, -this->y, -this->z, this->w);
 
         qv = (*this) * qv * conj;
 
-        return Vector3f { qv.x, qv.y, qv.z };
+        return Vector3f(qv.x, qv.y, qv.z);
     }
 };
