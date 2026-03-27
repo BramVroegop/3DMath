@@ -699,3 +699,112 @@ struct Matrix4f {
         };
     }
 };
+
+struct Quaternion {
+    float x, y, z, w;
+
+    static float inner(Quaternion q1, Quaternion q2) {
+        return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+    }
+
+    /*
+    Angle expected in radians
+    Also assumes a normalized Quaternion
+    */
+    static Quaternion from_axis_angle(Vector3f axis, float angle) {
+        float h_angle = angle * 0.5f;
+        float c = cosf(h_angle);
+        float s = sinf(h_angle);
+
+        Quaternion q { axis.x * s, axis.y * s, axis.z * s, c };
+        return q;
+    }
+
+    /*
+    Angles expected in radians
+    Order of rotation will be YXZ
+    Also assumes a normalized Quaternion
+    */
+    static Quaternion from_euler(float x, float y, float z) {
+        Quaternion qx = Quaternion::from_axis_angle(Vector3f { 1.0f, 0.0f, 0.0f}, x);
+        Quaternion qy = Quaternion::from_axis_angle(Vector3f { 0.0f, 1.0f, 0.0f}, y);
+        Quaternion qz = Quaternion::from_axis_angle(Vector3f { 0.0f, 0.0f, 1.0f}, z);
+
+        return qy * qx * qz;
+    };
+
+    /*
+    Assumes normalized Quaternions
+    Math ripped from: https://en.wikipedia.org/wiki/Spherical_linear_interpolation
+    */
+    static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+        float inner = Quaternion::inner(q1, q2);
+
+        /*
+        Additional shortest path condition
+        */
+        if (inner < 0.0f) {
+            inner *= -1.0f;
+            q2 = Quaternion { -q2.x, -q2.y, -q2.z, -q2.w };
+        }
+
+        float angle = acosf(inner);
+        float s = sinf(angle);
+
+        // If quaternions are nearly identical fall back to nlerp
+        if (inner > 0.9995f) {
+            Quaternion r = q1 * (1.0f - t) + q2 * t;
+            return r.normalized();
+        }
+
+        return q1 * (sinf((1.0f - t) * angle) / s) + q2 * (sinf(t * angle) / s);
+    }
+
+    float length() {
+        return sqrtf(this->x * this->x + this->y * this->y + this->z * this->z + this->w * this->w);
+    }
+
+    Quaternion normalized() {
+        float l = this->length();
+
+        if (l == 0.0f) {
+            return *this;
+        }
+
+        float inv_l = 1.0f / l;
+        return Quaternion { this->x * inv_l , this->y * inv_l, this->z * inv_l, this->w * inv_l };
+    }
+
+    Quaternion operator+(const Quaternion &q) const {
+        return Quaternion { this->x + q.x, this->y + q.y, this->z + q.z, this->w + q.w };
+    }
+
+    Quaternion operator*(float s) const {
+        return Quaternion { this->x * s, this->y * s, this->z * s, this->w * s };
+    }
+
+    Quaternion operator*(const Quaternion &q) {
+        return Quaternion {
+            this->w * q.x + this->x * q.w + this->y * q.z - this->z * q.y,
+            this->w * q.y - this->x * q.z + this->y * q.w + this->z * q.x,
+            this->w * q.z + this->x * q.y - this->y * q.x + this->z * q.w,
+            this->w * q.w - this->x * q.x - this->y * q.y - this->z * q.z
+        };
+    }
+
+    void operator*=(const Quaternion &q) {
+        *this = (*this) * q;
+    }
+
+    /*
+    Assumes a normalized quaternion
+    */
+    Vector3f operator*(const Vector3f &v) {
+        Quaternion qv = { v.x, v.y, v.z, 0.0f };
+        Quaternion conj { -this->x, -this->y, -this->z, this->w };
+
+        qv = (*this) * qv * conj;
+
+        return Vector3f { qv.x, qv.y, qv.z };
+    }
+};
