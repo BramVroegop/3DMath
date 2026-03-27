@@ -1,12 +1,10 @@
 #pragma once
 #include <math.h>
 
-#define M_EPSILON 0.9995f
-
 struct Vector2f {
     float x, y;
 
-    static float inner(Vector2f v1, Vector2f v2) {
+    static float dot(Vector2f v1, Vector2f v2) {
         return v1.x * v2.x + v1.y * v2.y;
     }
 
@@ -21,8 +19,8 @@ struct Vector2f {
 
     static Vector2f projected(Vector2f v, Vector2f to_project_on) {
         Vector2f normalized = to_project_on.normalized();
-        float inner = Vector2f::inner(v, normalized);
-        return normalized * inner;
+        float dot = Vector2f::dot(v, normalized);
+        return normalized * dot;
     };
 
     float length_sqr() {
@@ -55,19 +53,19 @@ struct Vector2f {
         *this = (*this) - v2;
     }
 
-    Vector2f operator*(const float &scalar) {
+    Vector2f operator*(const float scalar) {
         return Vector2f { this->x * scalar, this->y * scalar };
     }
 
-    void operator*=(const float &scalar) {
+    void operator*=(const float scalar) {
         *this = (*this) * scalar;
     }
 
-    Vector2f operator/(const float &scalar) {
+    Vector2f operator/(const float scalar) {
         return Vector2f { this->x / scalar, this->y / scalar };
     }
 
-    void operator/=(const float &scalar) {
+    void operator/=(const float scalar) {
         *this = (*this) / scalar;
     }
 };
@@ -75,7 +73,7 @@ struct Vector2f {
 struct Vector3f {
     float x, y, z;
 
-    static float inner(Vector3f v1, Vector3f v2) {
+    static float dot(Vector3f v1, Vector3f v2) {
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
     }
 
@@ -89,8 +87,8 @@ struct Vector3f {
 
     static Vector3f projected(Vector3f v, Vector3f to_project_on) {
         Vector3f normalized = to_project_on.normalized();
-        float inner = Vector3f::inner(v, normalized);
-        return normalized * inner;
+        float dot = Vector3f::dot(v, normalized);
+        return normalized * dot;
     };
 
     float length_sqr() {
@@ -123,19 +121,19 @@ struct Vector3f {
         *this = (*this) - v2;
     }
 
-    Vector3f operator*(const float &scalar) {
+    Vector3f operator*(const float scalar) {
         return Vector3f { this->x * scalar, this->y * scalar, this->z * scalar };
     }
 
-    void operator*=(const float &scalar) {
+    void operator*=(const float scalar) {
         *this = (*this) * scalar;
     }
 
-    Vector3f operator/(const float &scalar) {
+    Vector3f operator/(const float scalar) {
         return Vector3f { this->x / scalar, this->y / scalar, this->z / scalar };
     }
 
-    void operator/=(const float &scalar) {
+    void operator/=(const float scalar) {
         *this = (*this) / scalar;
     }
 };
@@ -183,6 +181,7 @@ struct Triangle2D {
     /*
     Math for this was pulled straight from the "Barycentric coordinates on triangles" heading
     https://en.wikipedia.org/wiki/Barycentric_coordinate_system
+    Will return null if triangle area is 0
 
     It's unoptimized, I'm aware. But it's mine :3
     */
@@ -191,6 +190,11 @@ struct Triangle2D {
         Vector2f e3 = p1 - p3;
 
         float total_area_parralelogram = Vector2f::cross(e1, e3 * -1);
+
+        if (total_area_parralelogram < 0.0005f) {
+            return;
+        }
+
         *u = Vector2f::cross(e3, hit - p3) / total_area_parralelogram;
         *v = Vector2f::cross(e1, hit - p1) / total_area_parralelogram;
     }
@@ -203,6 +207,7 @@ struct Triangle3D {
     /*
     Math for this was pulled straight from the "Barycentric coordinates on triangles" heading
     https://en.wikipedia.org/wiki/Barycentric_coordinate_system
+    Will return null if triangle area is 0
 
     It's unoptimized, I'm aware. But it's mine :3
     */
@@ -212,11 +217,20 @@ struct Triangle3D {
 
         Vector3f perp = Vector3f::cross(e1, e3 * -1);
         float total_area_parralelogram = perp.length();
+
+        if (total_area_parralelogram < 0.00005f) {
+            return;
+        }
+
         Vector3f normalized = perp / total_area_parralelogram;
 
-        *u = Vector3f::inner(normalized, Vector3f::cross(e3, hit - p3)) / total_area_parralelogram;
-        *v = Vector3f::inner(normalized, Vector3f::cross(e1, hit - p1)) / total_area_parralelogram;
+        *u = Vector3f::dot(normalized, Vector3f::cross(e3, hit - p3)) / total_area_parralelogram;
+        *v = Vector3f::dot(normalized, Vector3f::cross(e1, hit - p1)) / total_area_parralelogram;
     }
+};
+
+struct Ray {
+    Vector3f origin, dir;
 };
 
 /*
@@ -705,7 +719,7 @@ struct Matrix4f {
 struct Quaternion {
     float x, y, z, w;
 
-    static float inner(Quaternion q1, Quaternion q2) {
+    static float dot(Quaternion q1, Quaternion q2) {
         return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
     }
 
@@ -740,21 +754,21 @@ struct Quaternion {
     Math ripped from: https://en.wikipedia.org/wiki/Spherical_linear_interpolation
     */
     static Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
-        float inner = Quaternion::inner(q1, q2);
+        float dot = Quaternion::dot(q1, q2);
 
         /*
         Additional shortest path condition
         */
-        if (inner < 0.0f) {
-            inner *= -1.0f;
+        if (dot < 0.0f) {
+            dot *= -1.0f;
             q2 *= -1.0f;
         }
 
-        float angle = acosf(inner);
+        float angle = acosf(dot);
         float s = sinf(angle);
 
         // If quaternions are nearly identical fall back to nlerp
-        if (inner > M_EPSILON) {
+        if (dot > 0.9995f) {
             Quaternion r = q1 * (1.0f - t) + q2 * t;
             return r.normalized();
         }
