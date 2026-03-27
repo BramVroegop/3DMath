@@ -229,10 +229,6 @@ struct Triangle3D {
     }
 };
 
-struct Ray {
-    Vector3f origin, dir;
-};
-
 /*
 NOTE: Matrices are row-major
 */
