@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include <cstdint>
 
 struct Vector2f {
     float x, y;
@@ -259,8 +260,8 @@ struct Matrix2f {
     float arr[2][2];
 
     Matrix2f(float diagonal = 1.0f) {
-        for (unsigned int i = 0; i < 2; i++) {
-            for (unsigned int j = 0; j < 2; j++) {
+        for (uint32_t i = 0; i < 2; i++) {
+            for (uint32_t j = 0; j < 2; j++) {
                 if (i == j) {
                     arr[i][j] = diagonal;
                 } else {
@@ -298,8 +299,8 @@ struct Matrix2f {
 
     Matrix2f transposed() {
         Matrix2f m;
-        for (unsigned int i = 0; i < 2; i++) {
-            for (unsigned int j = 0; j < 2; j++) {
+        for (uint32_t i = 0; i < 2; i++) {
+            for (uint32_t j = 0; j < 2; j++) {
                 if (i != j) {
                     m.arr[i][j] = this->arr[j][i];
                 } else {
@@ -314,8 +315,8 @@ struct Matrix2f {
     Matrix2f operator+(const Matrix2f &m) {
         Matrix2f r;
 
-        for (unsigned int i = 0; i < 2; i++) {
-            for (unsigned int j = 0; j < 2; j++) {
+        for (uint32_t i = 0; i < 2; i++) {
+            for (uint32_t j = 0; j < 2; j++) {
                 r.arr[i][j] = this->arr[i][j] + m.arr[i][j];
             }
         }
@@ -330,8 +331,8 @@ struct Matrix2f {
      Matrix2f operator-(const Matrix2f &m) {
         Matrix2f r;
 
-        for (unsigned int i = 0; i < 2; i++) {
-            for (unsigned int j = 0; j < 2; j++) {
+        for (uint32_t i = 0; i < 2; i++) {
+            for (uint32_t j = 0; j < 2; j++) {
                 r.arr[i][j] = this->arr[i][j] - m.arr[i][j];
             }
         }
@@ -346,10 +347,10 @@ struct Matrix2f {
     Matrix2f operator*(const Matrix2f &m) {
         Matrix2f r;
 
-        for (unsigned int i = 0; i < 2; i++) {
-            for (unsigned int j = 0; j < 2; j++) {
+        for (uint32_t i = 0; i < 2; i++) {
+            for (uint32_t j = 0; j < 2; j++) {
                 float sum = 0.0f;
-                for (unsigned int k = 0; k < 2; k++) {
+                for (uint32_t k = 0; k < 2; k++) {
                     sum += this->arr[i][k] * m.arr[k][j]; 
                 }
                 r.arr[i][j] = sum;
@@ -379,8 +380,8 @@ struct Matrix3f {
     float arr[3][3];
 
     Matrix3f(float diagonal = 1.0f) {
-        for (unsigned int i = 0; i < 3; i++) {
-            for (unsigned int j = 0; j < 3; j++) {
+        for (uint32_t i = 0; i < 3; i++) {
+            for (uint32_t j = 0; j < 3; j++) {
                 if (i == j) {
                     arr[i][j] = diagonal;
                 } else {
@@ -422,8 +423,8 @@ struct Matrix3f {
 
     Matrix3f transposed() {
         Matrix3f m;
-        for (unsigned int i = 0; i < 3; i++) {
-            for (unsigned int j = 0; j < 3; j++) {
+        for (uint32_t i = 0; i < 3; i++) {
+            for (uint32_t j = 0; j < 3; j++) {
                 if (i != j) {
                     m.arr[i][j] = this->arr[j][i];
                 } else {
@@ -438,8 +439,8 @@ struct Matrix3f {
     Matrix3f operator+(const Matrix3f &m) {
         Matrix3f r;
 
-        for (unsigned int i = 0; i < 3; i++) {
-            for (unsigned int j = 0; j < 3; j++) {
+        for (uint32_t i = 0; i < 3; i++) {
+            for (uint32_t j = 0; j < 3; j++) {
                 r.arr[i][j] = this->arr[i][j] + m.arr[i][j];
             }
         }
@@ -454,8 +455,8 @@ struct Matrix3f {
      Matrix3f operator-(const Matrix3f &m) {
         Matrix3f r;
 
-        for (unsigned int i = 0; i < 3; i++) {
-            for (unsigned int j = 0; j < 3; j++) {
+        for (uint32_t i = 0; i < 3; i++) {
+            for (uint32_t j = 0; j < 3; j++) {
                 r.arr[i][j] = this->arr[i][j] - m.arr[i][j];
             }
         }
@@ -470,10 +471,10 @@ struct Matrix3f {
     Matrix3f operator*(const Matrix3f &m) {
         Matrix3f r;
 
-        for (unsigned int i = 0; i < 3; i++) {
-            for (unsigned int j = 0; j < 3; j++) {
+        for (uint32_t i = 0; i < 3; i++) {
+            for (uint32_t j = 0; j < 3; j++) {
                 float sum = 0.0f;
-                for (unsigned int k = 0; k < 3; k++) {
+                for (uint32_t k = 0; k < 3; k++) {
                     sum += this->arr[i][k] * m.arr[k][j]; 
                 }
                 r.arr[i][j] = sum;
@@ -504,8 +505,8 @@ struct Matrix4f {
     float arr[4][4];
 
     Matrix4f(float diagonal = 1.0f) {
-        for (unsigned int i = 0; i < 4; i++) {
-            for (unsigned int j = 0; j < 4; j++) {
+        for (uint32_t i = 0; i < 4; i++) {
+            for (uint32_t j = 0; j < 4; j++) {
                 if (i == j) {
                     arr[i][j] = diagonal;
                 } else {
@@ -661,8 +662,8 @@ struct Matrix4f {
         float inv_det = 1.0f / det;
 
         Matrix4f result(0.0f);
-        for (unsigned int i = 0; i < 4; i++) {
-            for (unsigned int j = 0; j < 4; j++) {
+        for (uint32_t i = 0; i < 4; i++) {
+            for (uint32_t j = 0; j < 4; j++) {
                 result.arr[i][j] = inv[i][j] * inv_det;
             }
         }
@@ -672,8 +673,8 @@ struct Matrix4f {
 
     Matrix4f transposed() {
         Matrix4f m;
-        for (unsigned int i = 0; i < 4; i++) {
-            for (unsigned int j = 0; j < 4; j++) {
+        for (uint32_t i = 0; i < 4; i++) {
+            for (uint32_t j = 0; j < 4; j++) {
                 m.arr[i][j] = this->arr[j][i];
             }
         }
@@ -682,8 +683,8 @@ struct Matrix4f {
 
     Matrix4f operator+(const Matrix4f &m) {
         Matrix4f r;
-        for (unsigned int i = 0; i < 4; i++) {
-            for (unsigned int j = 0; j < 4; j++) {
+        for (uint32_t i = 0; i < 4; i++) {
+            for (uint32_t j = 0; j < 4; j++) {
                 r.arr[i][j] = this->arr[i][j] + m.arr[i][j];
             }
         }
@@ -696,8 +697,8 @@ struct Matrix4f {
 
     Matrix4f operator-(const Matrix4f &m) {
         Matrix4f r;
-        for (unsigned int i = 0; i < 4; i++) {
-            for (unsigned int j = 0; j < 4; j++) {
+        for (uint32_t i = 0; i < 4; i++) {
+            for (uint32_t j = 0; j < 4; j++) {
                 r.arr[i][j] = this->arr[i][j] - m.arr[i][j];
             }
         }
@@ -710,10 +711,10 @@ struct Matrix4f {
 
     Matrix4f operator*(const Matrix4f &m) {
         Matrix4f r(0.0f);
-        for (unsigned int i = 0; i < 4; i++) {
-            for (unsigned int j = 0; j < 4; j++) {
+        for (uint32_t i = 0; i < 4; i++) {
+            for (uint32_t j = 0; j < 4; j++) {
                 float sum = 0.0f;
-                for (unsigned int k = 0; k < 4; k++) {
+                for (uint32_t k = 0; k < 4; k++) {
                     sum += this->arr[i][k] * m.arr[k][j]; 
                 }
                 r.arr[i][j] = sum;
