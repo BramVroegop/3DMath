@@ -758,7 +758,7 @@ struct Quaternion {
         float c = cosf(h_angle);
         float s = sinf(h_angle);
 
-        Quaternion q { axis.x * s, axis.y * s, axis.z * s, c };
+        Quaternion q(axis.x * s, axis.y * s, axis.z * s, c);
         return q;
     }
 
@@ -819,6 +819,18 @@ struct Quaternion {
 
     Quaternion operator+(const Quaternion &q) {
         return Quaternion(this->x + q.x, this->y + q.y, this->z + q.z, this->w + q.w);
+    }
+
+    void operator+=(const Quaternion &q) {
+        *this = (*this) + q;
+    }
+
+    Quaternion operator-(const Quaternion &q) {
+        return Quaternion(this->x - q.x, this->y - q.y, this->z - q.z, this->w - q.w);
+    }
+
+    void operator-=(const Quaternion &q) {
+        *this = (*this) - q;
     }
 
     Quaternion operator*(float s) {
