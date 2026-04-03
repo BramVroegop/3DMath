@@ -818,6 +818,24 @@ struct Quaternion {
         return Quaternion(this->x * inv_l , this->y * inv_l, this->z * inv_l, this->w * inv_l);
     }
 
+    Matrix3f as_Matrix3f() {
+        Matrix3f m;
+
+        m.arr[0][0] = 1.0f - 2.0f * this->y * this->y - 2.0f * this->z * this->z;
+        m.arr[0][1] = 2.0f * this->x * this->y - 2.0f * this->z * this->w;
+        m.arr[0][2] = 2.0f * this->x * this->z + 2.0f * this->y * this->w;
+
+        m.arr[1][0] = 2.0f * this->x * this->y + 2.0f * this->z * this->w;
+        m.arr[1][1] = 1.0f - 2.0f * this->x * this->x - 2.0f * this->z * this->z;
+        m.arr[1][2] = 2.0f * this->y * this->z - 2.0f * this->x * this->w;
+
+        m.arr[2][0] = 2.0f * this->x * this->z - 2.0f * this->y * this->w;
+        m.arr[2][1] = 2.0f * this->y * this->z + 2.0f * this->x * this->w;
+        m.arr[2][2] = 1.0f - 2.0f * this->x * this->x - 2.0f * this->y * this->y;
+
+        return m;
+    }
+
     Quaternion operator+(const Quaternion &q) {
         return Quaternion(this->x + q.x, this->y + q.y, this->z + q.z, this->w + q.w);
     }
