@@ -213,8 +213,10 @@ struct Triangle2D {
             return;
         }
 
-        *u = Vector2f::cross(e3, hit - p3) / total_area_parralelogram;
-        *v = Vector2f::cross(e1, hit - p1) / total_area_parralelogram;
+        float inv_area = 1.0f / total_area_parralelogram;
+
+        *u = Vector2f::cross(e3, hit - p3) * inv_area;
+        *v = Vector2f::cross(e1, hit - p1) * inv_area;
     }
 
 };
@@ -246,10 +248,11 @@ struct Triangle3D {
             return;
         }
 
-        Vector3f normalized = perp / total_area_parralelogram;
+        float inv_area = 1.0f / total_area_parralelogram;
+        Vector3f normalized = perp * inv_area;
 
-        *u = Vector3f::dot(normalized, Vector3f::cross(e3, hit - p3)) / total_area_parralelogram;
-        *v = Vector3f::dot(normalized, Vector3f::cross(e1, hit - p1)) / total_area_parralelogram;
+        *u = Vector3f::dot(normalized, Vector3f::cross(e3, hit - p3)) * inv_area;
+        *v = Vector3f::dot(normalized, Vector3f::cross(e1, hit - p1)) * inv_area;
     }
 };
 
