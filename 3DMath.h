@@ -836,6 +836,25 @@ struct Quaternion {
         return m;
     }
 
+    Matrix4f as_Matrix4f() {
+        Matrix3f m = this->as_Matrix3f();
+        Matrix4f r(1.0f);
+
+        r.arr[0][0] = m.arr[0][0];
+        r.arr[0][1] = m.arr[0][1];
+        r.arr[0][2] = m.arr[0][2];
+
+        r.arr[1][0] = m.arr[1][0];
+        r.arr[1][1] = m.arr[1][1];
+        r.arr[1][2] = m.arr[1][2];
+
+        r.arr[2][0] = m.arr[2][0];
+        r.arr[2][1] = m.arr[2][1];
+        r.arr[2][2] = m.arr[2][2];
+
+        return r;
+    }
+
     Quaternion operator+(const Quaternion &q) {
         return Quaternion(this->x + q.x, this->y + q.y, this->z + q.z, this->w + q.w);
     }
