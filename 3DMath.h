@@ -256,6 +256,17 @@ struct Triangle3D {
     }
 };
 
+// struct Raycast {
+//     Vector3f origin, direction;
+
+//     Raycast(Vector3f &origin, Vector3f &direction) {
+//         this->origin = origin;
+//         this->direction = direction;
+//     }
+
+
+// };
+
 /*
 NOTE: Matrices are row-major
 */
