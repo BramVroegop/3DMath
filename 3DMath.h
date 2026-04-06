@@ -385,6 +385,22 @@ struct Matrix2f {
         r.y = this->arr[1][0] * v.x + this->arr[1][1] * v.y; 
         return r;
     }
+
+    Matrix2f operator*(float scalar) {
+        Matrix2f m;
+
+        for (uint32_t i = 0; i < 2; i++) {
+            for (uint32_t j = 0; j < 2; j++) {
+                m.arr[i][j] = this->arr[i][j] * scalar;
+            }
+        }
+
+        return m;
+    }
+
+    void operator*=(float scalar) {
+        *this = (*this) * scalar;
+    }
 };
 
 /*
@@ -509,6 +525,22 @@ struct Matrix3f {
         r.y = this->arr[1][0] * v.x + this->arr[1][1] * v.y + this->arr[1][2] * v.z; 
         r.z = this->arr[2][0] * v.x + this->arr[2][1] * v.y + this->arr[2][2] * v.z;
         return r;
+    }
+    
+    Matrix3f operator*(float scalar) {
+        Matrix3f m;
+
+        for (uint32_t i = 0; i < 3; i++) {
+            for (uint32_t j = 0; j < 3; j++) {
+                m.arr[i][j] = this->arr[i][j] * scalar;
+            }
+        }
+
+        return m;
+    }
+
+    void operator*=(float scalar) {
+        *this = (*this) * scalar;
     }
 };
 
@@ -747,6 +779,22 @@ struct Matrix4f {
             arr[1][0] * v.x + arr[1][1] * v.y + arr[1][2] * v.z + arr[1][3],
             arr[2][0] * v.x + arr[2][1] * v.y + arr[2][2] * v.z + arr[2][3],
         };
+    }
+
+    Matrix4f operator*(float scalar) {
+        Matrix4f m;
+
+        for (uint32_t i = 0; i < 4; i++) {
+            for (uint32_t j = 0; j < 4; j++) {
+                m.arr[i][j] = this->arr[i][j] * scalar;
+            }
+        }
+
+        return m;
+    }
+
+    void operator*=(float scalar) {
+        *this = (*this) * scalar;
     }
 };
 
