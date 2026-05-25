@@ -242,30 +242,18 @@ struct Triangle3D {
         Vector3f e3 = p1 - p3;
 
         Vector3f perp = Vector3f::cross(e1, e3 * -1);
-        float total_area_parralelogram = perp.length();
+        float total_area_parralelogram_sqr = perp.length_sqr();
 
-        if (total_area_parralelogram < 0.00005f) {
+        if (total_area_parralelogram_sqr < 0.00005f) {
             return;
         }
 
-        float inv_area = 1.0f / total_area_parralelogram;
-        Vector3f normalized = perp * inv_area;
+        float inv_area_sqr = 1.0f / total_area_parralelogram_sqr;
 
-        *u = Vector3f::dot(normalized, Vector3f::cross(e3, hit - p3)) * inv_area;
-        *v = Vector3f::dot(normalized, Vector3f::cross(e1, hit - p1)) * inv_area;
+        *u = Vector3f::dot(perp, Vector3f::cross(e3, hit - p3)) * inv_area_sqr;
+        *v = Vector3f::dot(perp, Vector3f::cross(e1, hit - p1)) * inv_area_sqr;
     }
 };
-
-// struct Raycast {
-//     Vector3f origin, direction;
-
-//     Raycast(Vector3f &origin, Vector3f &direction) {
-//         this->origin = origin;
-//         this->direction = direction;
-//     }
-
-
-// };
 
 /*
 NOTE: Matrices are row-major
